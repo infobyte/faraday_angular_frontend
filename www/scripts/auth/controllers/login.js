@@ -6,10 +6,17 @@ angular.module('faradayApp')
     .controller('loginCtrl', ['$scope', '$location', '$cookies', 'loginSrv', 'BASEURL' ,'$uibModal',
     function($scope, $location, $cookies, loginSrv, BASEURL, $uibModal) {
 
+        // check if we are in the correct frontend
+        var version_indicator = $scope.version.substring(0,1);
+        var frontend_ok = true
+        if (version_indicator !== 'p'){
+            frontend_ok = false;
+        }
         $scope.data = {
             "user": null,
             "pass": null,
-            "remember": false
+            "remember": false,
+            "frontend_branch": frontend_ok,
         };
 
         $scope.errorLoginFlag = false;
