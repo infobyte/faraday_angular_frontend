@@ -15,6 +15,9 @@ angular.module('faradayApp')
                 if(!osint.use_external_icon)
                     osint.icon = "images/" + osint.icon + ".png";
                 $scope.osint = osint;
+                if (conf.data.ver.substring(0,1) != 'p'){
+                    return $location.path('/wrong_branch');
+                }
         	});
 
             $scope.about = function() {

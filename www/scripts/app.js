@@ -382,6 +382,10 @@ faradayApp.config(['$routeProvider', '$uibTooltipProvider', 'BASEURL',
             controller: 'adminCtrl',
             title: ' Admin | '
         }).
+        when('/wrong_branch', {
+            templateUrl: 'scripts/dev/wrong_branch.html',
+            title: 'Wrong fronted branch!! | '
+        }).
         otherwise({redirectTo:'/'});
 }]);
 
