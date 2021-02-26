@@ -31,6 +31,13 @@ angular.module('faradayApp')
 
         $scope.workspace = "";
 
+        // check if we are in the correct frontend
+        const version_indicator = $scope.version.substring(0,1);
+        $scope.correct_frontend_branch = true;
+        if (isNaN(version_indicator) === true){
+            $scope.correct_frontend_branch = false;
+            console.log("You are using the wrong frontend branch");
+        }
         if(!$scope.component)
             $scope.component = "";
 
