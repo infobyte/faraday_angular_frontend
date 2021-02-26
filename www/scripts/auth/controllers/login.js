@@ -11,6 +11,7 @@ angular.module('faradayApp')
         let correct_frontend_branch = true;
         if (isNaN(version_indicator) === true){
             correct_frontend_branch = false;
+            console.log("You are using the wrong frontend branch");
         }
         $scope.data = {
             "user": null,
