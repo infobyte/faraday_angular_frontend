@@ -44,10 +44,10 @@ var faradayApp = angular.module('faradayApp', [
     })())
     .constant("APIURL", (function() {
         if (window.location.pathname === "/"){
-            var url = window.location.origin + "/_api/v2/";
+            var url = window.location.origin + "/_api/v3/";
         } else {
             var client_url_id = window.location.pathname;
-            var url = window.location.origin + client_url_id + "_api/v2/";
+            var url = window.location.origin + client_url_id + "_api/v3/";
         }
         return url;
     })())

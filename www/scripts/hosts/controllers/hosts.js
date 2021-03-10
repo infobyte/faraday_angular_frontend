@@ -469,7 +469,7 @@ angular.module('faradayApp')
             var fd = new FormData();
             fd.append('csrf_token', $scope.csrf_token);
             fd.append('file', $scope.fileToUpload);
-            $http.post(BASEURL + '_api/v2/ws/' + $scope.workspace + '/hosts/bulk_create', fd, {
+            $http.post(BASEURL + '_api/v3/ws/' + $scope.workspace + '/hosts/bulk_create', fd, {
                 transformRequest: angular.identity,
                 withCredentials: false,
                 headers: {'Content-Type': undefined}
