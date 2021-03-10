@@ -8,7 +8,7 @@ angular.module('faradayApp')
         function($scope, $uibModal, indexFact, BASEURL) {
         	indexFact.getConf().then(function(conf) {
                 $scope.version = conf.data.ver;
-                var osint = conf.data.osint;
+                var osint = conf.data.osint || {};
                 osint.prefix = osint.prefix || "/search?query=";
                 osint.suffix = osint.suffix || "";
                 if(!osint.use_external_icon)
