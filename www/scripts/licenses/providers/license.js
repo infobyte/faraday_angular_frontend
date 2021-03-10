@@ -57,7 +57,7 @@ angular.module('faradayApp')
                 var deferred = $q.defer(),
                 self = this;
 
-                var url = APIURL + "licenses/" + self._id + "/";
+                var url = APIURL + "licenses/" + self._id;
 
                 $http.delete(url)
                     .then(function(resp) {
@@ -71,7 +71,7 @@ angular.module('faradayApp')
             update: function(data) {
                 var deferred = $q.defer(),
                 self = this;
-                var url = APIURL + "licenses/" + self._id + "/";
+                var url = APIURL + "licenses/" + self._id;
 
                 $http.put(url, data)
                     .then(function(res) {
@@ -91,7 +91,7 @@ angular.module('faradayApp')
                 delete this._id;
                 delete this._rev;
 
-                $http.post(APIURL + "licenses/", self)
+                $http.post(APIURL + "licenses", self)
                     .then(function(data) {
                         self._id = data._id;
                         self._rev = data.rev;
