@@ -1774,7 +1774,7 @@ angular.module("faradayApp")
                   }
                 );
 
-           }; //TODO revisar trailing slashes de los cambios a v3 que estan por commitearse.
+           };
 
 
 
