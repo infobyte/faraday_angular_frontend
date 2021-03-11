@@ -286,6 +286,8 @@ angular.module('faradayApp')
                             _cmd.duration = "In progress";
                         } else if (_cmd.duration == "Not started") {
                             _cmd.duration = "Not started";
+                        } else if (_cmd.duration == "Timeout") {
+                            _cmd.duration = "Timeout";
                         } else if(_cmd.duration != undefined) {
                             _cmd.duration = _cmd.duration.toFixed(2) + "s";
                         }
