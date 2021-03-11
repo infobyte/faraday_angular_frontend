@@ -390,7 +390,7 @@ angular.module('faradayApp')
 
          $scope.readonlyToggle = function (ws) {
             workspacesFact.readOnlyToogle(ws.name).then(function (resp) {
-                ws.readonly = resp.data;
+                ws.readonly = resp.data.readonly;
             });
         };
 

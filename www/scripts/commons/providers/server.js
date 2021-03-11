@@ -429,9 +429,18 @@ angular.module("faradayApp")
                 return send_data(workspaceUrl, data, false, "PATCH");
             }
 
-            ServerAPI.readOnlyToogle = function (wsName) {//TODO
-                var putUrl = APIURL + "ws/" + wsName + "/change_readonly/";
-                return send_data(putUrl, undefined, false, "PUT");
+            ServerAPI.readOnlyToogle = function (wsName) {
+                let deferred = $q.defer();
+                ServerAPI.getWorkspace(wsName)
+                    .then(response => {
+                        let workspaceUrl = APIURL + "ws/" + wsName;
+                        let data = {"readonly": !response.data.readonly};
+                        deferred.resolve(send_data(workspaceUrl, data, false, "PATCH"));
+                    }, error => {
+                        deferred.reject(error);
+                    })
+
+                return deferred.promise;
             }
 
 
