@@ -417,14 +417,16 @@ angular.module("faradayApp")
                 return get(APIURL + "custom_fields_schema");
             }
 
-            ServerAPI.activateWorkspace = function (wsName) { //TODO
-                var putUrl = APIURL + "ws/" + wsName + "/activate/";
-                return send_data(putUrl, undefined, false, "PUT");
+            ServerAPI.activateWorkspace = function (wsName) {
+                let workspaceUrl = APIURL + "ws/" + wsName;
+                let data = {"active": true};
+                return send_data(workspaceUrl, data, false, "PATCH");
             }
 
-            ServerAPI.deactivateWorkspace = function (wsName) {//TODO
-                var putUrl = APIURL + "ws/" + wsName + "/deactivate/";
-                return send_data(putUrl, undefined, false, "PUT");
+            ServerAPI.deactivateWorkspace = function (wsName) {
+                let workspaceUrl = APIURL + "ws/" + wsName;
+                let data = {"active": false};
+                return send_data(workspaceUrl, data, false, "PATCH");
             }
 
             ServerAPI.readOnlyToogle = function (wsName) {//TODO
