@@ -157,7 +157,7 @@ angular.module('faradayApp')
 
                               $scope.loading = true;
 
-                              $http.post(APIURL + 'vulnerability_template/bulk_create/', fd, {
+                              $http.post(APIURL + 'vulnerability_template/bulk_create', fd, {
                                 transformRequest: angular.identity,
                                 withCredentials: false,
                                 headers: {'Content-Type': undefined}

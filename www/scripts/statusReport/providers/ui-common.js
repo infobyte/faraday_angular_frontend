@@ -115,7 +115,7 @@ angular.module('faradayApp')
         uiCommonFact.openEvidence = function (name, vuln, ws) {
             var currentEvidence = vuln._attachments[name];
             if (!currentEvidence.newfile)
-                window.open(BASEURL + '_api/v2/ws/' + ws + '/vulns/' + vuln._id + '/attachment/' + encodeURIComponent(name), '_blank');
+                window.open(BASEURL + '_api/v3/ws/' + ws + '/vulns/' + vuln._id + '/attachment/' + encodeURIComponent(name), '_blank');
         };
 
 

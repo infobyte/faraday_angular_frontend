@@ -342,7 +342,7 @@ angular.module('faradayApp')
             $scope.activeToggle = function (ws) {
                 if (ws.active) {
                     workspacesFact.deactivate(ws.name).then(function (resp) {
-                        if (resp.data) {
+                        if (!resp.data.active) {
                             ws.active = false;
 
                             let pos = -1;
@@ -361,7 +361,7 @@ angular.module('faradayApp')
                     });
                 } else {
                     workspacesFact.activate(ws.name).then(function (resp) {
-                        if (resp.data) {
+                        if (resp.data.active) {
                             ws.active = true
                         }
                     });
@@ -390,7 +390,7 @@ angular.module('faradayApp')
 
          $scope.readonlyToggle = function (ws) {
             workspacesFact.readOnlyToogle(ws.name).then(function (resp) {
-                ws.readonly = resp.data;
+                ws.readonly = resp.data.readonly;
             });
         };
 

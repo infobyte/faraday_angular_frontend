@@ -9,11 +9,10 @@ angular.module("faradayApp")
     .factory("ServerAPI", ["BASEURL", "$http", "$q", "APIURL",
         function (BASEURL, $http, $q, APIURL) {
             var ServerAPI = {};
-            var FILTER_URL = BASEURL + "_api/filter/";
+            var FILTER_URL = BASEURL + "_api/filter";
 
             var createGetRelatedUrl = function (wsName, objectType, objectId, relatedObjectType) {
-                var objectName = ((objectName) ? "/" + objectType : "");
-                return get_url = APIURL + "ws/" + wsName + "/" + objectType + "/" + objectId + "/" + relatedObjectType + "/";
+                return APIURL + "ws/" + wsName + "/" + objectType + "/" + objectId + "/" + relatedObjectType;
             };
 
             var createGetUrl = function (wsName, objectName, objectId) {
@@ -22,7 +21,7 @@ angular.module("faradayApp")
                     objectName = objectName + "/" + objectId;
                 }
 
-                return APIURL + "ws/" + wsName + objectName + "/";
+                return APIURL + "ws/" + wsName + objectName;
             };
 
             // create GET URL for objects that do not belong to a workspace
@@ -31,7 +30,7 @@ angular.module("faradayApp")
                     objectName = objectName + "/" + objectId;
                 }
 
-                return APIURL + objectName + "/";
+                return APIURL + objectName;
             };
 
             var createNewGetUrl = function (wsName, objectId, objectType) {
@@ -39,26 +38,26 @@ angular.module("faradayApp")
             }
 
             var createPostUrl = function (wsName, objectId, objectType) {
-                return APIURL + "ws/" + wsName + "/" + objectType + "/";
+                return APIURL + "ws/" + wsName + "/" + objectType;
             };
 
             // create POST URL for objects that do not belong to a workspace
             var createNonWorkspacedPostUrl = function (objectId, objectType) {
-                return APIURL + objectType + "/";
+                return APIURL + objectType;
             };
 
             var createPutUrl = function (wsName, objectId, objectType) {
-                return APIURL + "ws/" + wsName + "/" + objectType + "/" + objectId + "/";
+                return APIURL + "ws/" + wsName + "/" + objectType + "/" + objectId;
             };
 
             // create PUT URL for objects that do not belong to a workspace
             var createNonWorkspacedPutUrl = function (objectId, objectType) {
-                return APIURL + objectType + "/" + objectId + "/";
+                return APIURL + objectType + "/" + objectId;
             };
 
             var createDbUrl = function (wsName) {
                 wsName = wsName || "";
-                return APIURL + "ws/" + wsName + (wsName ? "/" : "");
+                return APIURL + "ws" + (wsName ? `/${wsName}` : "");
             }
 
             var createDeleteUrl = createPutUrl;
@@ -353,7 +352,7 @@ angular.module("faradayApp")
 
             ServerAPI.getFilteredVulns = function (wsName, jsonOptions) {
                 var getUrl = createGetUrl(wsName, 'vulns');
-                return get(getUrl + 'filter?q=' + jsonOptions);
+                return get(getUrl + '/filter?q=' + jsonOptions);
             }
 
             ServerAPI.getVulnerabilityTemplate = function (objId) {
@@ -402,11 +401,11 @@ angular.module("faradayApp")
             }
 
             ServerAPI.getWorkspacesNames = function () {
-                return get(APIURL + "ws/");
+                return get(APIURL + "ws");
             }
 
             ServerAPI.getWorkspaces = function () {
-                return get(APIURL + "ws/");
+                return get(APIURL + "ws");
             }
 
             ServerAPI.getWorkspace = function (wsName) {
@@ -415,27 +414,37 @@ angular.module("faradayApp")
             }
 
              ServerAPI.getCustomFields = function () {
-                return get(APIURL + "custom_fields_schema/");
+                return get(APIURL + "custom_fields_schema");
             }
 
             ServerAPI.activateWorkspace = function (wsName) {
-                var putUrl = APIURL + "ws/" + wsName + "/activate/";
-                return send_data(putUrl, undefined, false, "PUT");
+                let workspaceUrl = APIURL + "ws/" + wsName;
+                let data = {"active": true};
+                return send_data(workspaceUrl, data, false, "PATCH");
             }
 
             ServerAPI.deactivateWorkspace = function (wsName) {
-                var putUrl = APIURL + "ws/" + wsName + "/deactivate/";
-                return send_data(putUrl, undefined, false, "PUT");
+                let workspaceUrl = APIURL + "ws/" + wsName;
+                let data = {"active": false};
+                return send_data(workspaceUrl, data, false, "PATCH");
             }
 
             ServerAPI.readOnlyToogle = function (wsName) {
-                var putUrl = APIURL + "ws/" + wsName + "/change_readonly/";
-                return send_data(putUrl, undefined, false, "PUT");
+                let deferred = $q.defer();
+                ServerAPI.getWorkspace(wsName)
+                    .then(response => {
+                        let workspaceUrl = APIURL + "ws/" + wsName;
+                        let data = {"readonly": !response.data.readonly};
+                        deferred.resolve(send_data(workspaceUrl, data, false, "PATCH"));
+                    }, error => {
+                        deferred.reject(error);
+                    })
+
+                return deferred.promise;
             }
 
 
             ServerAPI.getWorkspaceSummary = function (wsName, confirmed) {
-
                 var getUrl = createGetUrl(wsName);
                 var payload = {};
 
@@ -447,7 +456,7 @@ angular.module("faradayApp")
             }
 
             ServerAPI.getObj = function (wsName, objID, objectType) {
-                var getUrl = createNewGetUrl(wsName, objID, objectType) + "/";
+                var getUrl = createNewGetUrl(wsName, objID, objectType);
                 return get(getUrl);
             }
 
@@ -471,7 +480,7 @@ angular.module("faradayApp")
             }
 
             ServerAPI.getServicesBy = function (wsName, what) {
-                var url = createGetUrl(wsName, 'services') + 'count/';
+                var url = createGetUrl(wsName, 'services') + '/count';
                 return get(url, {"group_by": what})
             }
 
@@ -485,8 +494,7 @@ angular.module("faradayApp")
             }
 
             ServerAPI.getVulnsBySeverity = function (wsName, confirmed) {
-
-                var url = createGetUrl(wsName, 'vulns') + 'count/';
+                var url = createGetUrl(wsName, 'vulns') + '/count';
                 var payload = {'group_by': 'severity'}
 
                 if (confirmed !== undefined) {
@@ -497,7 +505,7 @@ angular.module("faradayApp")
             }
 
             ServerAPI.getVulnsGroupedBy = function (wsName, groupBy, confirmed) {
-                var url = createGetUrl(wsName, 'vulns') + 'count/';
+                var url = createGetUrl(wsName, 'vulns') + '/count';
                 var payload = {'group_by': groupBy}
                 if (confirmed) {
                     payload.confirmed = confirmed;
@@ -543,7 +551,7 @@ angular.module("faradayApp")
             };
 
             ServerAPI.bulkCreateVulnerabilityTemplate = function (vulns) {
-                var bulkCreateURL = APIURL + 'vulnerability_template/bulk_create/';
+                var bulkCreateURL = APIURL + 'vulnerability_template/bulk_create';
                 return send_data(bulkCreateURL, vulns, false, "POST");
             };
 
@@ -615,7 +623,7 @@ angular.module("faradayApp")
                     let url = APIURL + "ws/" + wsName + "/vulns/export_csv";
                     return get(url  + '?q=' + jsonOptions);
                 }else{
-                    let url = APIURL + "ws/" + wsName + "/vulns/export_csv/";
+                    let url = APIURL + "ws/" + wsName + "/vulns/export_csv";
                     return get(url);
                 }
             }
@@ -725,7 +733,7 @@ angular.module("faradayApp")
             };
 
             ServerAPI.getTools = function(hid, ws){
-                return get(APIURL + 'ws/' + ws + '/hosts/' + hid + '/tools_history/');
+                return get(APIURL + 'ws/' + ws + '/hosts/' + hid + '/tools_history');
             }
 
             return ServerAPI;

@@ -1501,7 +1501,7 @@ angular.module("faradayApp")
             var fd = new FormData();
             fd.append('csrf_token', $scope.csrf_token);
             fd.append('file', $scope.fileToUpload);
-            $http.post($scope.baseurl + '_api/v2/ws/' + $scope.workspace + '/upload_report', fd, {
+            $http.post($scope.baseurl + '_api/v3/ws/' + $scope.workspace + '/upload_report', fd, {
                 transformRequest: angular.identity,
                 withCredentials: false,
                 headers: {'Content-Type': undefined},
@@ -1554,7 +1554,7 @@ angular.module("faradayApp")
 
 
         var updateSelectedVulnAtachments = function () {
-            var url = $scope.baseurl + '_api/v2/ws/' + $routeParams.wsId + '/vulns/' + $scope.lastClickedVuln._id + '/attachments/';
+            var url = $scope.baseurl + '_api/v3/ws/' + $routeParams.wsId + '/vulns/' + $scope.lastClickedVuln._id + '/attachment';
             $http.get(url).then(
                 function (response) {
                     $scope.lastClickedVuln._attachments = response.data
@@ -1769,7 +1769,7 @@ angular.module("faradayApp")
                     $scope.csrf_token = d.data.csrf_token;
                     fileItem.formData.push({'csrf_token': $scope.csrf_token});
                     fileItem.file.name = fileItem.file.name.replace(/ /g, '_');
-                    fileItem.url = $scope.baseurl + '_api/v2/ws/' + $routeParams.wsId + '/vulns/' + $scope.lastClickedVuln._id + '/attachment/';
+                    fileItem.url = $scope.baseurl + '_api/v3/ws/' + $routeParams.wsId + '/vulns/' + $scope.lastClickedVuln._id + '/attachment';
                     $scope.uploader.uploadAll();
                   }
                 );
@@ -1783,7 +1783,7 @@ angular.module("faradayApp")
            };
 
             $scope.removeEvidence = function (name) {
-                var url = $scope.baseurl + '_api/v2/ws/'+ $routeParams.wsId +'/vulns/'+ $scope.lastClickedVuln._id +'/attachment/' + name + '/'
+                var url = $scope.baseurl + '_api/v3/ws/'+ $routeParams.wsId +'/vulns/'+ $scope.lastClickedVuln._id +'/attachment/' + name;
                 $http.delete(url).then(
                       function(response) {
                           if (response && response.status === 200){
@@ -1795,7 +1795,7 @@ angular.module("faradayApp")
 
             $scope.selectItemToPrev = function (name) {
                 $scope.selectedAtachment.name = name;
-                $scope.selectedAtachment.url = BASEURL + '_api/v2/ws/' + $routeParams.wsId + '/vulns/' + $scope.lastClickedVuln._id + '/attachment/' + name + '/';
+                $scope.selectedAtachment.url = BASEURL + '_api/v3/ws/' + $routeParams.wsId + '/vulns/' + $scope.lastClickedVuln._id + '/attachment/' + name;
                 $scope.selectedAtachment.imgPrevFail = false;
                 var format = $scope.selectedAtachment.name.split('.').pop();
                 var imagesFormat = ['png','jpg', 'jpeg', 'gif'];
@@ -1806,7 +1806,7 @@ angular.module("faradayApp")
 
 
             $scope.copyToClipboard = function (name) {
-                var url = BASEURL + '_api/v2/ws/' + $routeParams.wsId + '/vulns/' + $scope.lastClickedVuln._id + '/attachment/' + name + '/';
+                var url = BASEURL + '_api/v3/ws/' + $routeParams.wsId + '/vulns/' + $scope.lastClickedVuln._id + '/attachment/' + name;
                 var copyElement = document.createElement("textarea");
                 copyElement.style.position = 'fixed';
                 copyElement.style.opacity = '0';

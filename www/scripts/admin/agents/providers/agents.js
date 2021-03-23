@@ -21,7 +21,7 @@ angular.module('faradayApp')
             $http.get(BASEURL + '_api/session').then(function(response){
                 var fd = new FormData();
                 fd.append('csrf_token', response.data.csrf_token);
-                $http.post(BASEURL + '_api/v2/agent_token/', fd, {
+                $http.post(BASEURL + '_api/v3/agent_token', fd, {
                     transformRequest: angular.identity,
                     withCredentials: false,
                     headers: {'Content-Type': undefined},
@@ -42,7 +42,7 @@ angular.module('faradayApp')
                     'csrf_token': response.data.csrf_token,
                     'executorData': executorData
                 };
-                var postUrl = BASEURL + '_api/v2/ws/' + wsName + '/agents/' + agentId + '/run/';
+                var postUrl = BASEURL + '_api/v3/ws/' + wsName + '/agents/' + agentId + '/run';
                 $http.post(postUrl, JSON.stringify(data), {
                     transformRequest: angular.identity,
                     withCredentials: false,

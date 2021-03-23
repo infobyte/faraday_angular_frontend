@@ -77,7 +77,7 @@ angular.module('faradayApp')
             var deferred = $q.defer(),
             self = this;
 
-            var url = APIURL + "licenses/";
+            var url = APIURL + "licenses";
 
             $http.get(url)
                 .then(function(res) {
