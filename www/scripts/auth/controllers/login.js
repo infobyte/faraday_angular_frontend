@@ -8,7 +8,7 @@ angular.module('faradayApp')
 
         // check if we are in the correct frontend
         let correct_frontend_branch = true;
-        if ($scope.version != null) {
+        if (typeof $scope.version != 'undefined') {
           const version_indicator = $scope.version.substring(0,1);
           if (isNaN(version_indicator) === true){
               correct_frontend_branch = false;
