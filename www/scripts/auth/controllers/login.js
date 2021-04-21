@@ -7,11 +7,13 @@ angular.module('faradayApp')
     function($scope, $location, $cookies, loginSrv, BASEURL, $uibModal) {
 
         // check if we are in the correct frontend
-        const version_indicator = $scope.version.substring(0,1);
         let correct_frontend_branch = true;
-        if (isNaN(version_indicator) === true){
-            correct_frontend_branch = false;
-            console.log("You are using the wrong frontend branch");
+        if ($scope.version != null) {
+          const version_indicator = $scope.version.substring(0,1);
+          if (isNaN(version_indicator) === true){
+              correct_frontend_branch = false;
+              console.log("You are using the wrong frontend branch");
+          }
         }
         $scope.data = {
             "user": null,
