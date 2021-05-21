@@ -1552,13 +1552,18 @@ angular.module("faradayApp")
         };
 
 
-        var updateSelectedVulnAtachments = function () {
-            var url = $scope.baseurl + '_api/v3/ws/' + $routeParams.wsId + '/vulns/' + $scope.lastClickedVuln._id + '/attachment';
+        var updateSelectedVulnAttachments = function (vulnId) {
+            var deferred = $q.defer();
+            var url = $scope.baseurl + '_api/v3/ws/' + $routeParams.wsId + '/vulns/' + vulnId + '/attachment';
             $http.get(url).then(
                 function (response) {
-                    $scope.lastClickedVuln._attachments = response.data
+                    deferred.resolve(response.data);
+                },
+                function (error) {
+                    deferred.reject(error);
                 }
             );
+            return deferred.promise;
         };
 
         $scope.toggleVulnPreview = function (e, vuln) {
@@ -1570,7 +1575,7 @@ angular.module("faradayApp")
                 $scope.showVulnPreview();
                 $scope.realVuln = vuln;
                 $scope.lastClickedVuln = angular.copy(vuln);
-                updateSelectedVulnAtachments();
+                updateSelectedVulnAttachments($scope.lastClickedVuln._id).then(attachments => $scope.lastClickedVuln._attachments = attachments);
                 uiCommonFact.updateBtnSeverityColor($scope.lastClickedVuln.severity, '#btn-chg-severity-prev', '#caret-chg-severity-prev');
                 uiCommonFact.updateBtnStatusColor($scope.lastClickedVuln.status, '#btn-chg-status-prev', '#caret-chg-status-prev');
             }
@@ -1778,7 +1783,13 @@ angular.module("faradayApp")
 
 
            uploader.onSuccessItem = function(fileItem, response, status, headers) {
-               updateSelectedVulnAtachments();
+               updateSelectedVulnAttachments($scope.lastClickedVuln._id).then(
+                   attachments => {
+                       $scope.lastClickedVuln._attachments = attachments;
+                       $scope.lastClickedVuln.attachments_count = Object.keys($scope.lastClickedVuln._attachments).length
+                       $scope.fieldToEdit = "attachments_count";
+                       $scope.processToEditPreview();
+                   });
            };
 
             $scope.removeEvidence = function (name) {
@@ -1787,6 +1798,9 @@ angular.module("faradayApp")
                       function(response) {
                           if (response && response.status === 200){
                               uiCommonFact.removeEvidence(name, $scope.lastClickedVuln);
+                              $scope.lastClickedVuln.attachments_count = Object.keys($scope.lastClickedVuln._attachments).length
+                              $scope.fieldToEdit = "attachments_count";
+                              $scope.processToEditPreview();
                           }
                       }
                 );
