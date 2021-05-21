@@ -1061,6 +1061,9 @@ angular.module("faradayApp")
                         },
                         workspace: function () {
                             return $scope.workspaceData;
+                        },
+                        updateVulnAttachments: function () {
+                            return updateSelectedVulnAttachments;
                         }
                     }
                 });

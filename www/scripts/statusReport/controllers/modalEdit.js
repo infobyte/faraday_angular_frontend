@@ -18,6 +18,7 @@ angular.module('faradayApp')
         'encodeURIComponentFilter',
         'customFields',
         'workspace',
+        'updateVulnAttachments',
         function ($modalInstance,
                   $routeParams,
                   EASEOFRESOLUTION,
@@ -31,7 +32,8 @@ angular.module('faradayApp')
                   referenceFact,
                   encodeURIComponent,
                   customFields,
-                  workspace) {
+                  workspace,
+                  updateVulnAttachments) {
 
                 var vm = this;
 
@@ -111,8 +113,11 @@ angular.module('faradayApp')
 
                     // TODO: EVIDENCE SHOUD BE LOADED ALREADY?
                     if (vm.vuln._attachments !== undefined) {
-                        vm.data._attachments = vm.vuln._attachments;
-                        vm.icons = commonsFact.loadIcons(vm.data._attachments);
+                        updateVulnAttachments(vm.vuln._id).then(attachments => {
+                            vm.vuln._attachments = attachments;
+                            vm.data._attachments = attachments;
+                            vm.icons = commonsFact.loadIcons(vm.data._attachments);
+                        })
                     }
 
                     angular.element('#nav-tabs-container a[data-target="#general"]').click();
