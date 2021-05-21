@@ -546,6 +546,11 @@ angular.module("faradayApp")
                 return modVulnWeb(updateObject, wsName, vulnWeb);
             }
 
+            ServerAPI.patchVuln = function (wsName, vulnId, data) {
+                let url = createPutUrl(wsName, vulnId, "vulns");
+                return send_data(url, data, false,"PATCH");
+            }
+
             ServerAPI.createVulnerabilityTemplate = function (vulnerabilityTemplate) {
                 return modVulnerabilityTemplate(createNonWorkspacedObject, vulnerabilityTemplate);
             };
