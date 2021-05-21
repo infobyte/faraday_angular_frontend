@@ -1016,24 +1016,19 @@ angular.module("faradayApp")
 
         $scope.toggleConfirmVuln = function(vuln, confirm) {
             if($scope.workspaceData.active){
-                _toggleConfirm([vuln], confirm);
+                _toggleConfirm(vuln, confirm);
             }
         };
 
-        var _toggleConfirm = function(vulns, confirm) {
-            var toggleConfirm = {'confirmed': !confirm},
-            deferred = $q.defer(),
-            promises = [];
-            vulns.forEach(function(vuln) {
-                promises.push(vulnsManager.updateVuln(vuln, toggleConfirm));
-            });
-            $q.all(promises).then(function(res) {
-                /*if(confirm === true) {
-                    loadVulns();
-                }*/
-            }, function(errorMsg){
-                commonsFact.showMessage("Error updating vuln " + vuln.name + " (" + vuln._id + "): " + errorMsg);
-            });
+        var _toggleConfirm = function(vuln, confirm) {
+            var toggleConfirm = {'confirmed': !confirm};
+            ServerAPI.patchVuln($scope.workspaceData.name, vuln._id, toggleConfirm)
+                .then(function(res) {
+                        vuln.confirmed = toggleConfirm["confirmed"];
+                    }, function(errorMsg){
+                        commonsFact.showMessage("Error updating vuln " + vuln.name + " (" + vuln._id + "): " + errorMsg);
+                    }
+                );
         };
 
         // action triggered from EDIT button
