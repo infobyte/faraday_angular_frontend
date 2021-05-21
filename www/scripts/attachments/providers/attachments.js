@@ -33,7 +33,7 @@ angular.module('faradayApp')
         // returns a promise
         attachmentsFact.loadAttachment = function(file) {
             var deferred = $q.defer(),
-            filename = encodeURIComponent(file.name),
+            filename = file.name.replace(/ /g, '_'),
             filetype = file.type.replace("/", "\/"),
             fileReader = new FileReader();
             fileReader.readAsDataURL(file);

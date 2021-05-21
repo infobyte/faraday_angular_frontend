@@ -133,12 +133,15 @@ angular.module('faradayApp')
                     files.forEach(function (file) {
                         file.newfile = true;
                         if (file.name.charAt(0) != "_") {
-                            if (!vm.data._attachments.hasOwnProperty(file)) vm.data._attachments[file.name] = file;
+                            if (!vm.data._attachments.hasOwnProperty(file)) {
+                                var fileName = file.name.replace(/ /g, '_');
+                                vm.data._attachments[fileName] = file;
+                            }
                         } else {
                             vm.file_name_error = true;
                         }
                     });
-                    vm.icons = commonsFact.loadIcons(vm._attachments);
+                    vm.icons = commonsFact.loadIcons(vm.data._attachments);
                 }
 
                 vm.removeEvidence = function (name) {
