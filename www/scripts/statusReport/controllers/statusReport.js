@@ -1092,6 +1092,7 @@ angular.module("faradayApp")
             });
             modal.result.then(function(data) {
                 var selectedVulns = [];
+                var promises = [];
                 $scope.getCurrentSelection().forEach(function(vuln) {
                     obj = {};
                     obj[property] = data;
@@ -1099,13 +1100,14 @@ angular.module("faradayApp")
                     if (opts.callback != undefined){
                         obj = opts.callback(vuln, data);
                     }
+                    promises.push(ServerAPI.patchVuln($scope.workspaceData.name, vuln._id, obj));
+                });
 
-                    vulnsManager.updateVuln(vuln, obj).then(function(vulns){
-                        loadVulns();
-                    }, function(errorMsg){
-                        // TODO: show errors somehow
-                        console.log("Error updating vuln " + vuln._id + ": " + errorMsg);
-                    });
+                $q.all(promises).then(function (res) {
+                    loadVulns();
+                }, function(errorMsg){
+                    // TODO: show errors somehow
+                    console.log("Error updating vuln " + vuln._id + ": " + errorMsg);
                 });
 
                 // Storage in cookies
