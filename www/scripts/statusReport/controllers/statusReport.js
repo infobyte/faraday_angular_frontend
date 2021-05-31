@@ -295,7 +295,7 @@ angular.module("faradayApp")
                 "status_code":      false,
                 "request":          false,
                 "refs":             false,
-                "evidence":         false,
+                "evidences":        false,
                 "hostnames":        true,
                 "impact":           false,
                 "method":           false,
@@ -330,7 +330,7 @@ angular.module("faradayApp")
                     "status_code":      "90",
                     "request":          "90",
                     "refs":             "20",
-                    "_attachments":     "100",
+                    "evidences":        "100",
                     "impact":           "90",
                     "method":           "90",
                     "params":           "90",
@@ -459,7 +459,6 @@ angular.module("faradayApp")
                 "<div class=\"ui-grid-selection-row-header-buttons \"  ng-class=\"{'ui-grid-row-selected': row.isSelected}\" ><input style=\"margin: 0; vertical-align: middle; background-position: -20px 0;\" type=\"checkbox\" ng-model=\"row.isSelected\" ng-click=\"row.isSelected=!row.isSelected;selectButtonClick(row, $event)\">&nbsp;</div>"
             );
 
-
             $templateCache.put('ui-grid/selectionSelectAllButtons',
                 "<div class=\"ui-grid-selection-row-header-buttons \" ng-class=\"{'ui-grid-all-selected': grid.selection.selectAll}\" ng-if=\"grid.options.enableSelectAll\"><input style=\"margin: 0; vertical-align: middle\" type=\"checkbox\" ng-model=\"grid.selection.selectAll\" ng-click=\"grid.selection.selectAll=!grid.selection.selectAll;headerButtonClick($event)\"></div>"
             );
@@ -569,12 +568,12 @@ angular.module("faradayApp")
                 visible: $scope.columns["refs"],
                 enableSorting: false,
             });
-            $scope.gridOptions.columnDefs.push({ name : '_attachments',
-                displayName: "evidence",
+            $scope.gridOptions.columnDefs.push({ name : 'attachments_count',
+                displayName: "evidences",
                 cellTemplate: 'scripts/statusReport/partials/ui-grid/columns/evidencecolumn.html',
                 headerCellTemplate: header,
-                sort: getColumnSort('_attachments'),
-                visible: $scope.columns["evidence"],
+                sort: getColumnSort('evidences'),
+                visible: $scope.columns["evidences"],
             });
             $scope.gridOptions.columnDefs.push({ name : 'impact',
                 cellTemplate: 'scripts/statusReport/partials/ui-grid/columns/impactcolumn.html',
@@ -1017,24 +1016,19 @@ angular.module("faradayApp")
 
         $scope.toggleConfirmVuln = function(vuln, confirm) {
             if($scope.workspaceData.active){
-                _toggleConfirm([vuln], confirm);
+                _toggleConfirm(vuln, confirm);
             }
         };
 
-        var _toggleConfirm = function(vulns, confirm) {
-            var toggleConfirm = {'confirmed': !confirm},
-            deferred = $q.defer(),
-            promises = [];
-            vulns.forEach(function(vuln) {
-                promises.push(vulnsManager.updateVuln(vuln, toggleConfirm));
-            });
-            $q.all(promises).then(function(res) {
-                /*if(confirm === true) {
-                    loadVulns();
-                }*/
-            }, function(errorMsg){
-                commonsFact.showMessage("Error updating vuln " + vuln.name + " (" + vuln._id + "): " + errorMsg);
-            });
+        var _toggleConfirm = function(vuln, confirm) {
+            var toggleConfirm = {'confirmed': !confirm};
+            ServerAPI.patchVuln($scope.workspaceData.name, vuln._id, toggleConfirm)
+                .then(function(res) {
+                        vuln.confirmed = toggleConfirm["confirmed"];
+                    }, function(errorMsg){
+                        commonsFact.showMessage("Error updating vuln " + vuln.name + " (" + vuln._id + "): " + errorMsg);
+                    }
+                );
         };
 
         // action triggered from EDIT button
@@ -1062,6 +1056,9 @@ angular.module("faradayApp")
                         },
                         workspace: function () {
                             return $scope.workspaceData;
+                        },
+                        updateVulnAttachments: function () {
+                            return updateSelectedVulnAttachments;
                         }
                     }
                 });
@@ -1095,6 +1092,7 @@ angular.module("faradayApp")
             });
             modal.result.then(function(data) {
                 var selectedVulns = [];
+                var promises = [];
                 $scope.getCurrentSelection().forEach(function(vuln) {
                     obj = {};
                     obj[property] = data;
@@ -1102,13 +1100,14 @@ angular.module("faradayApp")
                     if (opts.callback != undefined){
                         obj = opts.callback(vuln, data);
                     }
+                    promises.push(ServerAPI.patchVuln($scope.workspaceData.name, vuln._id, obj));
+                });
 
-                    vulnsManager.updateVuln(vuln, obj).then(function(vulns){
-                        loadVulns();
-                    }, function(errorMsg){
-                        // TODO: show errors somehow
-                        console.log("Error updating vuln " + vuln._id + ": " + errorMsg);
-                    });
+                $q.all(promises).then(function (res) {
+                    loadVulns();
+                }, function(errorMsg){
+                    // TODO: show errors somehow
+                    console.log("Error updating vuln " + vuln._id + ": " + errorMsg);
                 });
 
                 // Storage in cookies
@@ -1553,13 +1552,18 @@ angular.module("faradayApp")
         };
 
 
-        var updateSelectedVulnAtachments = function () {
-            var url = $scope.baseurl + '_api/v3/ws/' + $routeParams.wsId + '/vulns/' + $scope.lastClickedVuln._id + '/attachment';
+        var updateSelectedVulnAttachments = function (vulnId) {
+            var deferred = $q.defer();
+            var url = $scope.baseurl + '_api/v3/ws/' + $routeParams.wsId + '/vulns/' + vulnId + '/attachment';
             $http.get(url).then(
                 function (response) {
-                    $scope.lastClickedVuln._attachments = response.data
+                    deferred.resolve(response.data);
+                },
+                function (error) {
+                    deferred.reject(error);
                 }
             );
+            return deferred.promise;
         };
 
         $scope.toggleVulnPreview = function (e, vuln) {
@@ -1571,7 +1575,7 @@ angular.module("faradayApp")
                 $scope.showVulnPreview();
                 $scope.realVuln = vuln;
                 $scope.lastClickedVuln = angular.copy(vuln);
-                updateSelectedVulnAtachments();
+                updateSelectedVulnAttachments($scope.lastClickedVuln._id).then(attachments => $scope.lastClickedVuln._attachments = attachments);
                 uiCommonFact.updateBtnSeverityColor($scope.lastClickedVuln.severity, '#btn-chg-severity-prev', '#caret-chg-severity-prev');
                 uiCommonFact.updateBtnStatusColor($scope.lastClickedVuln.status, '#btn-chg-status-prev', '#caret-chg-status-prev');
             }
@@ -1779,7 +1783,13 @@ angular.module("faradayApp")
 
 
            uploader.onSuccessItem = function(fileItem, response, status, headers) {
-               updateSelectedVulnAtachments();
+               updateSelectedVulnAttachments($scope.lastClickedVuln._id).then(
+                   attachments => {
+                       $scope.lastClickedVuln._attachments = attachments;
+                       $scope.lastClickedVuln.attachments_count = Object.keys($scope.lastClickedVuln._attachments).length
+                       $scope.fieldToEdit = "attachments_count";
+                       $scope.processToEditPreview();
+                   });
            };
 
             $scope.removeEvidence = function (name) {
@@ -1788,6 +1798,9 @@ angular.module("faradayApp")
                       function(response) {
                           if (response && response.status === 200){
                               uiCommonFact.removeEvidence(name, $scope.lastClickedVuln);
+                              $scope.lastClickedVuln.attachments_count = Object.keys($scope.lastClickedVuln._attachments).length
+                              $scope.fieldToEdit = "attachments_count";
+                              $scope.processToEditPreview();
                           }
                       }
                 );
