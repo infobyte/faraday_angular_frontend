@@ -97,7 +97,7 @@ angular.module('faradayApp')
 					};
 					let params = executor.parameters_metadata;
 					for (let [key, value] of Object.entries(params)) {
-						let parameter = { name: key, isRequired: value };
+						let parameter = { name: key, data: value };
 						exec.parameters_metadata.push(parameter);
 						exec.parameters_values[key] = '';
 					}
