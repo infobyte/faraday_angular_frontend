@@ -123,7 +123,8 @@ angular.module('faradayApp')
 		             args: {}
 	             };
 	             for (let [key, value] of Object.entries($scope.data.selectedExecutor.parameters_values)) {
-					 executorData.args[key] = value;
+					 if(value)
+					     executorData.args[key] = value;
 				 }
                  agentFact.runAgent($scope.workspace, agentId, executorData).then(
                     function (response) {
