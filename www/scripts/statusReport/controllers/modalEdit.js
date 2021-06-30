@@ -18,6 +18,7 @@ angular.module('faradayApp')
         'encodeURIComponentFilter',
         'customFields',
         'workspace',
+        'updateVulnAttachments',
         function ($modalInstance,
                   $routeParams,
                   EASEOFRESOLUTION,
@@ -31,7 +32,8 @@ angular.module('faradayApp')
                   referenceFact,
                   encodeURIComponent,
                   customFields,
-                  workspace) {
+                  workspace,
+                  updateVulnAttachments) {
 
                 var vm = this;
 
@@ -111,8 +113,11 @@ angular.module('faradayApp')
 
                     // TODO: EVIDENCE SHOUD BE LOADED ALREADY?
                     if (vm.vuln._attachments !== undefined) {
-                        vm.data._attachments = vm.vuln._attachments;
-                        vm.icons = commonsFact.loadIcons(vm.data._attachments);
+                        updateVulnAttachments(vm.vuln._id).then(attachments => {
+                            vm.vuln._attachments = attachments;
+                            vm.data._attachments = attachments;
+                            vm.icons = commonsFact.loadIcons(vm.data._attachments);
+                        })
                     }
 
                     angular.element('#nav-tabs-container a[data-target="#general"]').click();
@@ -128,12 +133,15 @@ angular.module('faradayApp')
                     files.forEach(function (file) {
                         file.newfile = true;
                         if (file.name.charAt(0) != "_") {
-                            if (!vm.data._attachments.hasOwnProperty(file)) vm.data._attachments[file.name] = file;
+                            if (!vm.data._attachments.hasOwnProperty(file)) {
+                                var fileName = file.name.replace(/ /g, '_');
+                                vm.data._attachments[fileName] = file;
+                            }
                         } else {
                             vm.file_name_error = true;
                         }
                     });
-                    vm.icons = commonsFact.loadIcons(vm._attachments);
+                    vm.icons = commonsFact.loadIcons(vm.data._attachments);
                 }
 
                 vm.removeEvidence = function (name) {

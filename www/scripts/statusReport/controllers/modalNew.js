@@ -133,7 +133,10 @@ angular.module('faradayApp')
         vm.selectedFiles = function(files, e) {
             files.forEach(function(file) {
                 if(file.name.charAt(0) != "_") {
-                    if(!vm.data._attachments.hasOwnProperty(file)) vm.data._attachments[file.name] = file;
+                    if(!vm.data._attachments.hasOwnProperty(file)){
+                        var fileName = file.name.replace(/ /g, '_');
+                        vm.data._attachments[fileName] = file;
+                    }
                     vm.file_name_error = false;
                 } else {
                     vm.file_name_error = true;

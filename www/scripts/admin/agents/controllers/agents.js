@@ -97,7 +97,7 @@ angular.module('faradayApp')
 					};
 					let params = executor.parameters_metadata;
 					for (let [key, value] of Object.entries(params)) {
-						let parameter = { name: key, isRequired: value };
+						let parameter = { name: key, data: value };
 						exec.parameters_metadata.push(parameter);
 						exec.parameters_values[key] = '';
 					}
@@ -123,7 +123,8 @@ angular.module('faradayApp')
 		             args: {}
 	             };
 	             for (let [key, value] of Object.entries($scope.data.selectedExecutor.parameters_values)) {
-					 executorData.args[key] = value;
+					 if(value)
+					     executorData.args[key] = value;
 				 }
                  agentFact.runAgent($scope.workspace, agentId, executorData).then(
                     function (response) {

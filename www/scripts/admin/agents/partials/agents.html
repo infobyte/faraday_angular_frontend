@@ -144,8 +144,8 @@
 
                          <div class="var-item margin-top-65px row">
                             <div class="form-group col-md-6" ng-repeat="parameter in data.selectedExecutor.parameters_metadata" ng-class="{'has-error': form[$index].$invalid}">
-                                <label for="paramName" ng-class="{'text-danger': form[$index].$invalid}">{{parameter.name}} <span ng-if="parameter.isRequired">*</span></label>
-                                <input type="text" class="form-control" name="{{$index}}" id="paramName" placeholder="{{parameter.name}}" ng-model="data.selectedExecutor.parameters_values[parameter.name]" ng-required="parameter.isRequired">
+                                <label for="paramName" ng-class="{'text-danger': form[$index].$invalid}">{{parameter.name}} <span ng-if="parameter.data.mandatory">*</span></label>
+                                <input type="text" class="form-control" name="{{$index}}" id="paramName" placeholder="{{parameter.name}}" ng-model="data.selectedExecutor.parameters_values[parameter.name]" ng-required="parameter.data.mandatory" />
                             </div>
                         </div>
                     </div>
